@@ -5,10 +5,15 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.notificationexample.Receiver.Service;
 
 import static com.example.notificationexample.Notification.App.CHANNEL_1_ID;
 import static com.example.notificationexample.Notification.App.CHANNEL_2_ID;
@@ -94,13 +99,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void SendOnOneShit(String message, String title) {
 
+
+        // openactivity
+
+        Intent intent = new Intent(this, MainActivity.class);
+        // notification only takes in a pendingintent
+        // pending intent is a wrapper around the normal intent
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+
+
+        Intent broadcastintent = new Intent(this, Service.class);
+        broadcastintent.putExtra("toastMessage", message);
+        PendingIntent actionIntent = PendingIntent.getBroadcast(this,
+                0,
+                broadcastintent,
+                PendingIntent.FLAG_UPDATE_CURRENT); // flag means it will update the message
+
+
+
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.oness) // its manadotry
                 .setContentTitle(title)
                 .setContentText(message)
+                .setColor(Color.BLUE)
+                .setContentIntent(contentIntent) // takes the user to activity
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setAutoCancel(true) // if we click notification goes away
+                .addAction(R.mipmap.ic_launcher, "Button", actionIntent)
                 .build();
 
         notificationManagerCompat.notify(1, notification);
