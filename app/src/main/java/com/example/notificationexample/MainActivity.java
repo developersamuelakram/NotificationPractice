@@ -131,11 +131,8 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText(message)
                 .setColor(Color.BLUE)
                 .setLargeIcon(picture) // optional
-                .setStyle(new NotificationCompat.BigTextStyle()
-                .bigText(getString(R.string.longtext))
-                .setBigContentTitle("Expanded View")
-                        .setSummaryText("SummaryText"))
-                // this will be different than the collapesed view
+                .setStyle(new NotificationCompat.BigPictureStyle()
+                        .bigPicture(picture).bigLargeIcon(null)) // for expanded imageview
                 .setContentIntent(contentIntent) // takes the user to activity
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -148,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void SendOnTwoShit(String message, String title) {
+
+        // todo add media player actions buttons ..
+        // todo find dependency for mediastyle in androidx
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
                 .setSmallIcon(R.drawable.two) // its manadotry
