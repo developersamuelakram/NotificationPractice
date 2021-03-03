@@ -7,6 +7,8 @@ import androidx.core.app.NotificationManagerCompat;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -117,17 +119,28 @@ public class MainActivity extends AppCompatActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT); // flag means it will update the message
 
 
+        //putting an image in this shit
+        Bitmap picture = BitmapFactory.decodeResource(getResources(), R.drawable.hello);
+
+
+
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.oness) // its manadotry
                 .setContentTitle(title)
                 .setContentText(message)
                 .setColor(Color.BLUE)
+                .setLargeIcon(picture) // optional
+                .setStyle(new NotificationCompat.BigTextStyle()
+                .bigText(getString(R.string.longtext))
+                .setBigContentTitle("Expanded View")
+                        .setSummaryText("SummaryText"))
+                // this will be different than the collapesed view
                 .setContentIntent(contentIntent) // takes the user to activity
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setAutoCancel(true) // if we click notification goes away
-                .addAction(R.mipmap.ic_launcher, "Button", actionIntent)
+                .addAction(R.mipmap.ic_launcher, "Button", actionIntent) // upto three buttons
                 .build();
 
         notificationManagerCompat.notify(1, notification);
@@ -140,6 +153,15 @@ public class MainActivity extends AppCompatActivity {
                 .setSmallIcon(R.drawable.two) // its manadotry
                 .setContentTitle(title)
                 .setContentText(message)
+                .setStyle(new NotificationCompat.InboxStyle()
+                        .addLine("This is line a")
+                        .addLine("This is line b")
+                        .addLine("This is line c")
+                        .addLine("This is line d")
+                        .addLine("This is line e")
+                        .addLine("This is line f")
+                        .addLine("This is line g") // upto seven lines and then we can group them
+                )
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setAutoCancel(true) // if we click notification goes away
