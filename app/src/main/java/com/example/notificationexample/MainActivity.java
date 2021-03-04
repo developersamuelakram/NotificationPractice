@@ -7,16 +7,21 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.RemoteInput;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -97,10 +102,34 @@ public class MainActivity extends AppCompatActivity {
     // managing shit for remote input
 
     public void SendOneChannel1(Context context) {
+
+      // for example if the user disable the notification
+        // and we have to warn the user that if you disable it
+        // you would loose other funcationality of app
+        // so while he disables it - how do we direct the user towards
+        // setting screens
+
+        if (!notificationManagerCompat.areNotificationsEnabled()) {
+
+            openNotiicationSettings();
+            return;
+
+
+        }
+
+        // checks if the channel is blocked
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+        isChannelBlocked(CHANNEL_1_ID)) {
+
+            openChannelSettting(CHANNEL_1_ID);
+            return;
+        }
+
         SendOnOneShit(this);
 
 
     }
+
 
     public static void SendOnOneShit(Context context) {
 
@@ -237,6 +266,68 @@ public class MainActivity extends AppCompatActivity {
 
         notificationManagerCompat.notify(4, summaryNotification);
 
+
+
+
+    }
+
+
+
+    private void openNotiicationSettings() {
+
+
+        // for lower api - first user must go to general settings
+        // for oreo onwards directly we can send the user to app setting
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+            Intent intent = new Intent(Settings.ACTION_APN_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName()); // opens the app setting
+            startActivity(intent);
+
+
+
+        } else {
+
+
+
+
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + getPackageName())); // opens the app setting
+            startActivity(intent);
+        }
+
+
+
+
+    }
+
+    // so what if one specific notificatin is disabled
+    // then we have to refer to its channel
+    @RequiresApi(26)
+    private boolean isChannelBlocked(String channelid) {
+
+        NotificationManager manager  = getSystemService(NotificationManager.class);
+        NotificationChannel channel = manager.getNotificationChannel(channelid);
+
+        // return true if channel is blocked
+        return channel!= null &&
+                channel.getImportance() == NotificationManager.IMPORTANCE_NONE; // if this is the case we want it true
+
+
+
+
+
+    }
+
+    @RequiresApi(26)
+    private void openChannelSettting(String channelid) {
+
+        Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelid);
+        startActivity(intent);
 
 
 
