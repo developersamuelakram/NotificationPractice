@@ -36,6 +36,8 @@ import java.util.List;
 
 import static com.example.notificationexample.Notification.App.CHANNEL_1_ID;
 import static com.example.notificationexample.Notification.App.CHANNEL_2_ID;
+import static com.example.notificationexample.Notification.App.CHANNEL_3_ID;
+import static com.example.notificationexample.Notification.App.GROUP_1_ID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -329,6 +331,26 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelid);
         startActivity(intent);
 
+
+
+    }
+
+    public void deleteChannel (View v) {
+
+
+        // we only have notification channels on orea and onwards
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class); // compat is missing this delete method
+            notificationManager.deleteNotificationChannel(CHANNEL_3_ID);
+
+            /// IF WE WANT TO DELETE THE WHOLE GROUP
+          //  notificationManager.deleteNotificationChannelGroup(GROUP_1_ID);
+
+
+
+        }
 
 
     }
