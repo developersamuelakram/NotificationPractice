@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -91,15 +92,9 @@ public class MainActivity extends AppCompatActivity {
                 title = etTitle.getText().toString();
 
 
-                if (message.isEmpty()) {
-                    et_Message.setError("Type Bitch");
-                } else if (title.isEmpty()) {
-
-                    etTitle.setError("Type Title Bitch");
-                } else {
 
                     SendOnTwoShit(message, title);
-                }
+
 
 
 
@@ -202,28 +197,47 @@ public class MainActivity extends AppCompatActivity {
 
     private void SendOnTwoShit(String message, String title) {
 
-        // todo add media player actions buttons ..
-        // todo find dependency for mediastyle in androidx
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+        final int progressMax = 100; // this can also be a size of file
+
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
                 .setSmallIcon(R.drawable.two) // its manadotry
-                .setContentTitle(title)
-                .setContentText(message)
-                .setStyle(new NotificationCompat.InboxStyle()
-                        .addLine("This is line a")
-                        .addLine("This is line b")
-                        .addLine("This is line c")
-                        .addLine("This is line d")
-                        .addLine("This is line e")
-                        .addLine("This is line f")
-                        .addLine("This is line g") // upto seven lines and then we can group them
-                )
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setAutoCancel(true) // if we click notification goes away
-                .build();
+                .setContentTitle("Download")
+                .setContentText("Download In Progress")
+                .setPriority(NotificationCompat.PRIORITY_LOW) // it is does not make sound //
+                .setOngoing(true) // we cant swipe the notification away
+                .setOnlyAlertOnce(true)
+                .setProgress(progressMax, 0, false); //indetreminte true ignores the first two values
 
-        notificationManagerCompat.notify(2, notification);
 
+        notificationManagerCompat.notify(2, notification.build());
+
+        // creating a progressbar perodically
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SystemClock.sleep(2000); // delay of 2 seconds
+
+                for (int progress = 0; progress <=progressMax; progress+=10) {
+
+
+                    notification.setProgress(progressMax, progress, false);
+                    notificationManagerCompat.notify(2, notification.build());
+
+                    SystemClock.sleep(1000); // freeze the progresss once completed and started again
+
+
+                }
+
+                notification.setContentText("Download Finished")
+                        .setProgress(0, 0, false)// removing the progressbar
+                .setOngoing(false); // making the notification bar dismissiable
+                notificationManagerCompat.notify(2, notification.build());
+
+
+            }
+        }).start(); // starting this thread
     }
 }
