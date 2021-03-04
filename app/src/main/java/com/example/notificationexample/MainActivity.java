@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         MESSAGES.add(new Message("Behave Yourself", "Jenny"));
 
 
-
         sendOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,17 +70,11 @@ public class MainActivity extends AppCompatActivity {
                 title = etTitle.getText().toString();
 
 
-
                 SendOneChannel1(getApplicationContext());
-
-
-
-
 
 
             }
         });
-
 
 
         sendTwo.setOnClickListener(new View.OnClickListener() {
@@ -92,12 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 title = etTitle.getText().toString();
 
 
-
-                    SendOnTwoShit(message, title);
-
-
-
-
+                SendOnTwoShit(message, title);
 
 
             }
@@ -108,9 +96,8 @@ public class MainActivity extends AppCompatActivity {
 
     // managing shit for remote input
 
-    public  void SendOneChannel1 (Context context) {
+    public void SendOneChannel1(Context context) {
         SendOnOneShit(this);
-
 
 
     }
@@ -126,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
 
-
         // its the input result of the notification item
         // this remote input is only available in android nougat or higher
 
@@ -137,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent replypending = null;
         // in case of lower api remoteinput wont work so we can just give an option to start the activity instead of replying option
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
             replyIntent = new Intent(context, Service.class);
             replypending = PendingIntent.getBroadcast(context,
@@ -167,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         messagingStyle.setConversationTitle("Group Chat"); // only use this with more than 2 people
 
         // this is looping the messsages
-        for (Message chatMessage :MESSAGES) {
+        for (Message chatMessage : MESSAGES) {
 
             NotificationCompat.MessagingStyle.Message NotificationMessage = new NotificationCompat.MessagingStyle.Message(
                     chatMessage.getText(),
@@ -190,54 +176,83 @@ public class MainActivity extends AppCompatActivity {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setAutoCancel(true) // if we click notification goes away
                 .build();
-        NotificationManagerCompat nMc =  NotificationManagerCompat.from(context);
+        NotificationManagerCompat nMc = NotificationManagerCompat.from(context);
         nMc.notify(1, notification);
 
     }
 
     private void SendOnTwoShit(String message, String title) {
 
+        // on android nougat and onwards system automatically's group notification together
 
-        final int progressMax = 100; // this can also be a size of file
+        String title1 = "Title 1";
+        String message1 = "Message 1";
 
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+        String title2 = "Title 2";
+        String message2 = "Message 2";
+
+
+        Notification notification1 = new NotificationCompat.Builder(this, CHANNEL_2_ID)
                 .setSmallIcon(R.drawable.two) // its manadotry
-                .setContentTitle("Download")
-                .setContentText("Download In Progress")
-                .setPriority(NotificationCompat.PRIORITY_LOW) // it is does not make sound //
-                .setOngoing(true) // we cant swipe the notification away
-                .setOnlyAlertOnce(true)
-                .setProgress(progressMax, 0, false); //indetreminte true ignores the first two values
+                .setContentTitle(title1)
+                .setContentText(message1)
+                .setPriority(NotificationCompat.PRIORITY_LOW)// it is does not make sound //
+                .setGroup("example_group") // TO IDENTIFY THE GROUP OF NOTIFICATION
+                .build();
 
 
-        notificationManagerCompat.notify(2, notification.build());
 
-        // creating a progressbar perodically
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SystemClock.sleep(2000); // delay of 2 seconds
-
-                for (int progress = 0; progress <=progressMax; progress+=10) {
+        Notification notification2 = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+                .setSmallIcon(R.drawable.two) // its manadotry
+                .setContentTitle(title2)
+                .setContentText(message2)
+                .setPriority(NotificationCompat.PRIORITY_LOW)// it is does not make sound //
+                .setGroup("example_group") // TO IDENTIFY THE GROUP OF NOTIFICATION
+                .build();
 
 
-                    notification.setProgress(progressMax, progress, false);
-                    notificationManagerCompat.notify(2, notification.build());
 
-                    SystemClock.sleep(1000); // freeze the progresss once completed and started again
+        Notification summaryNotification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+                .setSmallIcon(R.drawable.reply) // its manadotry
+                .setStyle(new NotificationCompat.InboxStyle()
+                         .addLine(title2 + " " + message2)
+                        .addLine(title1 + " " + message1)
+                .setBigContentTitle("2 New Message")
+                .setSummaryText("user@username.com"))
+                .setPriority(NotificationCompat.PRIORITY_LOW)// it is does not make sound //
+                .setGroup("example_group") // TO IDENTIFY THE GROUP OF NOTIFICATION
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN) // if our prority is higher then first two will make noise
+                .build();
 
 
-                }
+        SystemClock.sleep(2000);
 
-                notification.setContentText("Download Finished")
-                        .setProgress(0, 0, false)// removing the progressbar
-                .setOngoing(false); // making the notification bar dismissiable
-                notificationManagerCompat.notify(2, notification.build());
+        notificationManagerCompat.notify(2, notification1);
+        SystemClock.sleep(2000);
+
+        notificationManagerCompat.notify(3, notification2);
+
+        SystemClock.sleep(2000);
+
+        notificationManagerCompat.notify(4, summaryNotification);
 
 
-            }
-        }).start(); // starting this thread
+        // for lower api we have to specify the group name so it puts them together
+
+/*
+        for (int i = 0; i < 5 ; i++) {
+
+            SystemClock.sleep(2000); // freeze the app creating a short delay
+            // in real app we should not do this on main thread because it would freze the whole app
+
+            notificationManagerCompat.notify(i, notification);
+
+
+
+        }*/
+
+
     }
+
 }
