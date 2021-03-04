@@ -238,19 +238,6 @@ public class MainActivity extends AppCompatActivity {
         notificationManagerCompat.notify(4, summaryNotification);
 
 
-        // for lower api we have to specify the group name so it puts them together
-
-/*
-        for (int i = 0; i < 5 ; i++) {
-
-            SystemClock.sleep(2000); // freeze the app creating a short delay
-            // in real app we should not do this on main thread because it would freze the whole app
-
-            notificationManagerCompat.notify(i, notification);
-
-
-
-        }*/
 
 
     }
